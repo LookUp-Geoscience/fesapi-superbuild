@@ -1,0 +1,82 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "cacheVariables": {
+                "BUILD_TYPE": "Debug",
+                "TPL_MIRROR_DIR": "${sourceDir}/tplMirror",
+                "NUM_PROC": "4"                
+            }
+        },
+        {
+            "name": "mpi",
+            "cacheVariables": {
+                "MPI_C_COMPILER": "/usr/bin/mpicc",
+                "MPI_CXX_COMPILER": "/usr/bin/mpicxx",
+                "ENABLE_MPI": "TRUE"
+            }
+        },
+        {
+            "name": "gcc",
+            "cacheVariables": {
+                "MPI_C_COMPILER": "/usr/bin/gcc",
+                "MPI_CXX_COMPILER": "/usr/bin/g++",
+                "ENABLE_MPI": "FALSE"
+            }
+        },
+        {
+            "name": "debug-gcc",
+            "displayName": "Debug GCC",
+            "inherits": ["base", "gcc"]
+        },
+        {
+            "name": "debug-mpi",
+            "displayName": "Debug MPI",
+            "inherits": ["base", "mpi"]
+        },
+        {
+            "name": "release-gcc",
+            "displayName": "Release GCC",
+            "inherits": ["base", "gcc"],
+            "environment": {
+                "BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "release-mpi",
+            "displayName": "Release",
+            "inherits": ["base", "mpi"],
+            "environment": {
+                "BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug-gcc",            
+            "configurePreset": "debug-gcc"
+        },
+        {
+            "name": "debug-mpi",
+            "configurePreset": "debug-mpi"
+        },
+        {
+            "name": "release-gcc",
+            "configurePreset": "release-gcc"
+        },
+        {
+            "name": "release-mpi",
+            "configurePreset": "release-mpi"
+        }
+    ]
+}
