@@ -20,6 +20,7 @@ if(WIN32)
   BINARY_DIR ${CMAKE_BINARY_DIR}/zlib-build
   INSTALL_DIR ${installDir}
 
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 
   CMAKE_ARGS
     -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE}
@@ -28,6 +29,8 @@ if(WIN32)
     -DBUILD_SHARED_LIBS:BOOL=ON    
   )
 endif()
+
+
 
 set(BOOST_DIR "${CMAKE_INSTALL_PREFIX}/boost")
 set(BOOST_URL "${TPL_MIRROR_DIR}/boost_1_67_0.tar.gz")
@@ -39,6 +42,7 @@ ExternalProject_Add( boost
   URL ${BOOST_URL}
   PREFIX ${PROJECT_BINARY_DIR}/boost
   INSTALL_DIR ${BOOST_DIR}
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
@@ -66,6 +70,7 @@ ExternalProject_Add( minizip
   URL ${MINIZIP_URL}
   PREFIX ${PROJECT_BINARY_DIR}/minizip
   INSTALL_DIR ${MINIZIP_DIR}
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   BUILD_COMMAND make -j ${NUM_PROC}
   INSTALL_COMMAND make install
   CMAKE_ARGS 
@@ -102,6 +107,7 @@ ExternalProject_Add( hdf5
                      URL ${HDF5_URL}
                      PREFIX ${PROJECT_BINARY_DIR}/hdf5
                      INSTALL_DIR ${HDF5_DIR}
+                     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                      BUILD_COMMAND make -j ${NUM_PROC}
                      INSTALL_COMMAND make install
                      CMAKE_ARGS -D CMAKE_C_COMPILER:STRING=${HDF5_C_COMPILER}
@@ -138,15 +144,29 @@ endif( ENABLE_MPI )
 # Then Fesapi
 #
 set(FESAPI_DIR "${CMAKE_INSTALL_PREFIX}/fesapi")
-set(FESAPI_URL "${TPL_MIRROR_DIR}/fesapi-2.8.0.0.tar.gz")
+# set(FESAPI_URL "${TPL_MIRROR_DIR}/fesapi-2.8.0.0.tar.gz")
+set(FESAPI_URL "https://github.com/F2I-Consulting/fesapi.git")
+set(FESAPI_TAG "origin/dev" )
+
 message(STATUS "Building Fesapi found at ${FESAPI_URL}")
+
+FetchContent_Declare(fesapi
+  GIT_REPOSITORY ${FESAPI_URL}
+  GIT_TAG ${FESAPI_TAG}
+)
+FetchContent_GetProperties(fesapi)
+if(NOT fesapi_POPULATED)
+  FetchContent_Populate(fesapi)
+endif()
 
 ExternalProject_Add( fesapi
   # URL ${FESAPI_URL}
-  GIT_REPOSITORY https://github.com/F2I-Consulting/fesapi.git
-  GIT_TAG origin/dev
+  # GIT_REPOSITORY https://github.com/F2I-Consulting/fesapi.git
+  # GIT_TAG origin/dev
+  SOURCE_DIR ${fesapi_SOURCE_DIR}  # Provided by FetchContent
   PREFIX ${PROJECT_BINARY_DIR}/fesapi
   INSTALL_DIR ${FESAPI_DIR}
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   BUILD_COMMAND make -j ${NUM_PROC}
   INSTALL_COMMAND make install
   DEPENDS hdf5 minizip boost

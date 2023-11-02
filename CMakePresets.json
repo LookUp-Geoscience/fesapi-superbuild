@@ -48,7 +48,7 @@
             "name": "release-gcc",
             "displayName": "Release GCC",
             "inherits": ["base", "gcc"],
-            "environment": {
+            "cacheVariables": {
                 "BUILD_TYPE": "Release"
             }
         },
@@ -56,7 +56,7 @@
             "name": "release-mpi",
             "displayName": "Release",
             "inherits": ["base", "mpi"],
-            "environment": {
+            "cacheVariables": {
                 "BUILD_TYPE": "Release"
             }
         }
