@@ -2,7 +2,7 @@
     "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 23,
+        "minor": 30,
         "patch": 0
     },
     "configurePresets": [
@@ -13,7 +13,6 @@
             "binaryDir": "${sourceDir}/build/${presetName}",
             "installDir": "${sourceDir}/install/${presetName}",
             "cacheVariables": {
-                "BUILD_TYPE": "Debug",
                 "TPL_MIRROR_DIR": "${sourceDir}/tplMirror",
                 "NUM_PROC": "4"                
             }
@@ -29,20 +28,24 @@
         {
             "name": "gcc",
             "cacheVariables": {
-                "MPI_C_COMPILER": "/usr/bin/gcc",
-                "MPI_CXX_COMPILER": "/usr/bin/g++",
                 "ENABLE_MPI": "FALSE"
             }
         },
         {
             "name": "debug-gcc",
             "displayName": "Debug GCC",
-            "inherits": ["base", "gcc"]
+            "inherits": ["base", "gcc"],
+            "cacheVariables": {
+                "BUILD_TYPE": "Debug"
+            }
         },
         {
             "name": "debug-mpi",
             "displayName": "Debug MPI",
-            "inherits": ["base", "mpi"]
+            "inherits": ["base", "mpi"],
+            "cacheVariables": {
+                "BUILD_TYPE": "Debug"
+            }
         },
         {
             "name": "release-gcc",

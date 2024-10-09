@@ -1,6 +1,18 @@
+# Fesapi superbuild
 
-Superbuild script for the [fesapi library](https://github.com/F2I-Consulting/fesapi)
+Superbuild script for the [fesapi library](https://github.com/F2I-Consulting/fesapi).
+Needs at least CMake v3.30
 
-[![Build Status](https://travis-ci.org/untereiner/fesapi-superbuild.svg?branch=master)](https://travis-ci.org/untereiner/fesapi-superbuild)
+## Available configure presets:
 
-[![Build status](https://ci.appveyor.com/api/projects/status/flaridheq8fe8xxf?svg=true)](https://ci.appveyor.com/project/untereiner/fesapi-superbuild)
+  - "debug-gcc"   - Debug GCC  
+  - "release-gcc" - Release GCC
+  - "debug-mpi"   - Debug MPI
+  - "release-mpi" - Release MPI
+
+## Available build presets:
+
+  - "debug-gcc"
+  - "release-gcc"
+  - "debug-mpi"  
+  - "release-mpi

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.30)
 
 project(fesapi-superbuild)
 
@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 include(ExternalProject)
-
+include(FetchContent)
 
 if(WIN32)
   ExternalProject_Add(zlib
@@ -110,26 +110,26 @@ ExternalProject_Add( hdf5
                      DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                      BUILD_COMMAND make -j ${NUM_PROC}
                      INSTALL_COMMAND make install
-                     CMAKE_ARGS -D CMAKE_C_COMPILER:STRING=${HDF5_C_COMPILER}
-                                -D CMAKE_CXX_COMPILER:STRING=${HDF5_CXX_COMPILER}
-                                -D CMAKE_C_FLAGS:STRING=${C_FLAGS_NO_WARNINGS}
-                                -D CMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}
-                                -D CMAKE_CXX_FLAGS:STRING=${CXX_FLAGS_NO_WARNINGS}
-                                -D CMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}
-                                -D CMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-                                -D CMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-                                -D HDF5_ENABLE_PARALLEL:BOOL=${ENABLE_MPI}
-                                -D CMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
-                                -D CMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-                                -D BUILD_SHARED_LIBS:BOOL=ON
-                                -D BUILD_STATIC_LIBS:BOOL=OFF
-                                -D BUILD_TESTING:BOOL=OFF
-                                -D HDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON
-                                -D HDF5_BUILD_HL_LIB:BOOL=OFF
-                                -D HDF5_BUILD_CPP_LIB:BOOL=OFF
-                                -D HDF5_BUILD_EXAMPLES:BOOL=ON
-                                -D HDF5_BUILD_TOOLS:BOOL=OFF
-                                -D HDF5_BUILD_UTILS:BOOL=OFF
+                     CMAKE_ARGS -DCMAKE_C_COMPILER:STRING=${HDF5_C_COMPILER}
+                                -DCMAKE_CXX_COMPILER:STRING=${HDF5_CXX_COMPILER}
+                                -DCMAKE_C_FLAGS:STRING=${C_FLAGS_NO_WARNINGS}
+                                -DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}
+                                -DCMAKE_CXX_FLAGS:STRING=${CXX_FLAGS_NO_WARNINGS}
+                                -DCMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}
+                                -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+                                -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+                                -DHDF5_ENABLE_PARALLEL:BOOL=${ENABLE_MPI}
+                                -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+                                -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+                                -DBUILD_SHARED_LIBS:BOOL=ON
+                                -DBUILD_STATIC_LIBS:BOOL=OFF
+                                -DBUILD_TESTING:BOOL=OFF
+                                -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON
+                                -DHDF5_BUILD_HL_LIB:BOOL=OFF
+                                -DHDF5_BUILD_CPP_LIB:BOOL=OFF
+                                -DHDF5_BUILD_EXAMPLES:BOOL=ON
+                                -DHDF5_BUILD_TOOLS:BOOL=OFF
+                                -DHDF5_BUILD_UTILS:BOOL=OFF
 )
 
 if( ENABLE_MPI )
@@ -144,26 +144,22 @@ endif( ENABLE_MPI )
 # Then Fesapi
 #
 set(FESAPI_DIR "${CMAKE_INSTALL_PREFIX}/fesapi")
-# set(FESAPI_URL "${TPL_MIRROR_DIR}/fesapi-2.8.0.0.tar.gz")
-set(FESAPI_URL "https://github.com/F2I-Consulting/fesapi.git")
-set(FESAPI_TAG "origin/dev" )
+set(FESAPI_URL "${TPL_MIRROR_DIR}/fesapi-2.10.1.0.tar.gz")
 
 message(STATUS "Building Fesapi found at ${FESAPI_URL}")
 
-FetchContent_Declare(fesapi
-  GIT_REPOSITORY ${FESAPI_URL}
-  GIT_TAG ${FESAPI_TAG}
-)
-FetchContent_GetProperties(fesapi)
-if(NOT fesapi_POPULATED)
-  FetchContent_Populate(fesapi)
-endif()
+#FetchContent_Declare(fesapi
+	#GIT_REPOSITORY ${FESAPI_URL}
+  #GIT_TAG ${FESAPI_TAG}
+  #)
+#FetchContent_GetProperties(fesapi)
+#if(NOT fesapi_POPULATED)
+	#FetchContent_Populate(fesapi)
+  #endif()
 
 ExternalProject_Add( fesapi
-  # URL ${FESAPI_URL}
-  # GIT_REPOSITORY https://github.com/F2I-Consulting/fesapi.git
-  # GIT_TAG origin/dev
-  SOURCE_DIR ${fesapi_SOURCE_DIR}  # Provided by FetchContent
+  URL ${FESAPI_URL}
+  #SOURCE_DIR ${fesapi_SOURCE_DIR}  # Provided by FetchContent
   PREFIX ${PROJECT_BINARY_DIR}/fesapi
   INSTALL_DIR ${FESAPI_DIR}
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
@@ -173,21 +169,19 @@ ExternalProject_Add( fesapi
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
               -DCMAKE_C_COMPILER=${FESAPI_C_COMPILER}
               -DCMAKE_CXX_COMPILER=${FESAPI_CXX_COMPILER}
-              # -DCMAKE_CXX_STANDARD=${TPL_CXX_STANDARD}
               -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=TRUE
               -DHDF5_ROOT:PATH=${HDF5_DIR}              
-              -DHDF5_PREFER_PARALLEL:BOOL=TRUE
-              -DMINIZIP_INCLUDE_DIR:PATH=${MINIZIP_DIR}/include
-              -DMINIZIP_LIBRARY_RELEASE:PATH=${MINIZIP_DIR}/lib/libminizip.a
+	            -DHDF5_PREFER_PARALLEL:BOOL=${ENABLE_MPI}
+              -DMINIZIP_ROOT:PATH=${MINIZIP_DIR}
               -DBoost_NO_SYSTEM_PATHS:BOOL=TRUE
               -DBoost_NO_BOOST_CMAKE:BOOL=TRUE
               -DBoost_INCLUDE_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/boost/src/boost              
-              -DWITH_EXAMPLE:BOOL=ON
+              -DWITH_EXAMPLE:BOOL=OFF
               -DWITH_DOTNET_WRAPPING:BOOL=OFF
               -DWITH_JAVA_WRAPPING:BOOL=OFF
-              -DWITH_PYTHON_WRAPPING:BOOL=OFF
-              -DWITH_RESQML2_2:BOOL=OFF
+              -DWITH_PYTHON_WRAPPING:BOOL=OFF              
               -DWITH_TEST:BOOL=OFF
+              -DWITH_RESQML2_2:BOOL=ON
 )
 
 
