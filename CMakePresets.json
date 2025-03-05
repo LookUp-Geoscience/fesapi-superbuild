@@ -28,7 +28,10 @@
         {
             "name": "gcc",
             "cacheVariables": {
-                "ENABLE_MPI": "FALSE"
+                "MPI_C_COMPILER": "/usr/bin/gcc",
+                "MPI_CXX_COMPILER": "/usr/bin/g++",
+                "ENABLE_MPI": "FALSE",
+		        "USE_EXTERNAL_DEPS": "FALSE"
             }
         },
         {
