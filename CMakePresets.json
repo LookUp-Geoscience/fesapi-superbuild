@@ -28,8 +28,8 @@
         {
             "name": "gcc",
             "cacheVariables": {
-                "MPI_C_COMPILER": "/usr/bin/gcc",
-                "MPI_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_C_COMPILER": "/usr/bin/cc",
+                "CMAKE_CXX_COMPILER": "/usr/bin/c++",
                 "ENABLE_MPI": "FALSE",
 		        "USE_EXTERNAL_DEPS": "FALSE"
             }
